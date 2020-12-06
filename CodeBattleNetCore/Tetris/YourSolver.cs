@@ -37,15 +37,14 @@ namespace TetrisClient
 		}
 
 		bool firstLvlFlag = true;
+		bool L_Level = false;
 		/// <summary>
 		/// Этот метод вызывается каждый игровой тик
 		/// </summary>
 		protected internal override Command Get(Board board)
 		{
 			
-			var landscape = new Landscape(board);
-
-			landscape.badLowestPoint = new List<int>();
+			var landscape = new Landscape(board, L_Level);
 
 			if (firstLvlFlag)
             {
@@ -55,18 +54,13 @@ namespace TetrisClient
 					firstLvlFlag = false;
 			}
 
+            if (!L_Level)
+            {
+				if (board.GetFutureFigures().Any(i => i == Element.ORANGE))
+					L_Level = true;
+            }
+
 			var figureType = board.GetCurrentFigureType();
-
-
-			if (figureType == Element.BLUE)
-			{
-				if(landscape.ReadyToStick)
-				return ThrowStick();
-
-				if (landscape.NeedWall)
-					return ThrowStickToWall();
-			}
-
 
 			var info = landscape.GetMoveFigureInfo(figureType);
 
@@ -90,17 +84,6 @@ namespace TetrisClient
 			}
 
 		}
-
-
-		public Command ThrowStick() => Command.RIGHT.Then(Command.RIGHT).Then(Command.RIGHT)
-				.Then(Command.RIGHT).Then(Command.RIGHT).Then(Command.RIGHT)
-				.Then(Command.RIGHT).Then(Command.RIGHT).Then(Command.RIGHT)
-				.Then(Command.DOWN);
-
-		public Command ThrowStickToWall() => Command.RIGHT.Then(Command.RIGHT).Then(Command.RIGHT)
-				.Then(Command.RIGHT).Then(Command.RIGHT).Then(Command.RIGHT)
-				.Then(Command.RIGHT).Then(Command.RIGHT).Then(Command.DOWN);
-
 
 	}
 }

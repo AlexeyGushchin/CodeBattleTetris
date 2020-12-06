@@ -6,18 +6,12 @@ namespace TetrisClient.MyLogic
 {
     public class Landscape
     {
-        #region Fields
-        private static int boardSize;
-
-        private int startPosition = boardSize / 2 - 1;
-
-        private static int[] _landscape;
-
-        public List<int> badLowestPoint;
-
-        #endregion
-
         #region Prop
+        private int boardSize { get; set; }
+        private int startPosition { get; set; }
+        private  int[] _landscape { get; set; }
+        private List<int> badLowestPoint { get; set; }
+        private bool Flag { get; set; }
         private int LowestPoint 
         {
             get
@@ -38,27 +32,27 @@ namespace TetrisClient.MyLogic
                 }
             }
         }
-        public bool ReadyToStick 
+        private bool RowsFilled
         {
             get
             {
                 for(int i = 0; i < _landscape.Length - 1; i++)
                 {
-                    if (_landscape[i] < 3)
+                    if (_landscape[i] < 4)
                         return false;
                 }
-
-                if (_landscape[_landscape.Length - 1] > 4)
-                    return false;
 
                 return true;
             }
         }
-        public bool NeedWall
+        private int Shift
         {
             get
             {
-                return _landscape[_landscape.Length - 2] < 4 && _landscape[0] != 0;
+                if (Flag)
+                    return 0;
+
+                return RowsFilled ? 0 : 1;
             }
         }
 
@@ -66,11 +60,14 @@ namespace TetrisClient.MyLogic
 
         #region Ctor
 
-        public Landscape(Board board)
+        public Landscape(Board board, bool flag)
         {
             boardSize = board.Size;
-            SetLandscape(board);
+            startPosition = boardSize / 2 - 1;
             badLowestPoint = new List<int>();
+            Flag = flag;
+
+            SetLandscape(board);
         }
 
         #endregion
@@ -155,7 +152,7 @@ namespace TetrisClient.MyLogic
         #endregion
 
         #region Private Methods
-        private static void SetLandscape(Board board)
+        private void SetLandscape(Board board)
         {
             _landscape = new int[board.Size];
 
@@ -175,8 +172,8 @@ namespace TetrisClient.MyLogic
         {
             var minElem = _landscape[0];
             var minIndex = 0;
-            ///////////////////////////////////////////////двоечка
-            for (int i = 1; i < _landscape.Length - 2; i++)
+
+            for (int i = 1; i < _landscape.Length - Shift; i++)
             {
                 if (_landscape[i] < minElem)
                 {
@@ -184,7 +181,6 @@ namespace TetrisClient.MyLogic
                     minIndex = i;
                 }
             }
-
             return minIndex;
         }
         private int GetIndexOfLowestPointWithout(List<int> indexes)
@@ -193,7 +189,7 @@ namespace TetrisClient.MyLogic
             var minElem = boardSize;
             var minIndex = boardSize;
 
-            for (int i = 0; i < _landscape.Length - 1; i++)
+            for (int i = 0; i < _landscape.Length - Shift; i++)
             {
                 if (indexes.Contains(i))
                     continue;
@@ -206,26 +202,6 @@ namespace TetrisClient.MyLogic
             }
 
             return minIndex;
-        }
-        private int GetStartIndex(int length, int point)
-        {
-            point++;
-            return point - length < 0 ? 0 : point - length;
-        }
-        private int GetEndIndex(int length, int point)
-        {//////////////////////////////////////////////единички
-            return point + length > boardSize - 1 ? boardSize - length - 1 : point;
-        }
-        private bool CanPut(int index, int[] arr)
-        {
-            var firstSum = _landscape[index] + arr[0];
-            for (int i = 0; i < arr.Length; i++, index++)
-            {
-                if (firstSum != _landscape[index] + arr[i])
-                    return false;
-            }
-
-            return true;
         }
         private bool TryPut(int[] landscape, int index, out FigureInfo info)
         {
@@ -249,6 +225,26 @@ namespace TetrisClient.MyLogic
 
             return false;
 
+        }
+        private int GetStartIndex(int length, int point)
+        {
+            point++;
+            return point - length < 0 ? 0 : point - length;
+        }
+        private int GetEndIndex(int length, int point)
+        { 
+            return point + length > boardSize - Shift ? boardSize - length - Shift : point;
+        }
+        private bool CanPut(int index, int[] arr)
+        {
+            var firstSum = _landscape[index] + arr[0];
+            for (int i = 0; i < arr.Length; i++, index++)
+            {
+                if (firstSum != _landscape[index] + arr[i])
+                    return false;
+            }
+
+            return true;
         }
         #endregion
 
