@@ -1,2 +1,2 @@
 # CodeBattleTetris
- CodeBattleTetris
+ Participant of the final
