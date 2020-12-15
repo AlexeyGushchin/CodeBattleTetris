@@ -11,7 +11,7 @@ namespace TetrisClient.MyLogic
         private int startPosition { get; set; }
         private  int[] _landscape { get; set; }
         private List<int> badLowestPoint { get; set; }
-        //private bool Flag { get; set; }
+        private bool Flag { get; set; }
         private int LowestPoint 
         {
             get
@@ -32,11 +32,11 @@ namespace TetrisClient.MyLogic
                 }
             }
         }
-        public bool ReadyToStick
+        private bool RowsFilled
         {
             get
             {
-                for(int i = 0; i < _landscape.Length - 2; i++)
+                for(int i = 0; i < _landscape.Length - 1; i++)
                 {
                     if (_landscape[i] < 4)
                         return false;
@@ -49,7 +49,10 @@ namespace TetrisClient.MyLogic
         {
             get
             {
-                return 0;
+                if (Flag)
+                    return 0;
+
+                return RowsFilled ? 0 : 1;
             }
         }
 
@@ -57,11 +60,12 @@ namespace TetrisClient.MyLogic
 
         #region Ctor
 
-        public Landscape(Board board)
+        public Landscape(Board board, bool flag)
         {
             boardSize = board.Size;
             startPosition = boardSize / 2 - 1;
             badLowestPoint = new List<int>();
+            Flag = flag;
 
             SetLandscape(board);
         }
@@ -169,7 +173,7 @@ namespace TetrisClient.MyLogic
             var minElem = _landscape[0];
             var minIndex = 0;
 
-            for (int i = 1; i < _landscape.Length - 1; i++)
+            for (int i = 1; i < _landscape.Length - Shift; i++)
             {
                 if (_landscape[i] < minElem)
                 {
@@ -185,7 +189,7 @@ namespace TetrisClient.MyLogic
             var minElem = boardSize;
             var minIndex = boardSize;
 
-            for (int i = 0; i < _landscape.Length - 1; i++)
+            for (int i = 0; i < _landscape.Length - Shift; i++)
             {
                 if (indexes.Contains(i))
                     continue;

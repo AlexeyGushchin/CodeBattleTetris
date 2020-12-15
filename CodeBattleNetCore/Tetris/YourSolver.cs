@@ -36,39 +36,31 @@ namespace TetrisClient
 		{
 		}
 
-		//bool firstLvlFlag = true;
-		//bool L_Level = false;
+		bool firstLvlFlag = true;
+		bool L_Level = false;
 		/// <summary>
 		/// Этот метод вызывается каждый игровой тик
 		/// </summary>
 		protected internal override Command Get(Board board)
 		{
 			
-			var landscape = new Landscape(board);
+			var landscape = new Landscape(board, L_Level);
 
-			//if (firstLvlFlag)
-   //         {
-			//	if (board.GetFutureFigures().All(i => i == Element.YELLOW))
-			//		return landscape.GetFirstLevelLogicCommand();
-			//	else
-			//		firstLvlFlag = false;
-			//}
+			if (firstLvlFlag)
+            {
+				if (board.GetFutureFigures().All(i => i == Element.YELLOW))
+					return landscape.GetFirstLevelLogicCommand();
+				else
+					firstLvlFlag = false;
+			}
 
-    //        if (!L_Level)
-    //        {
-				//if (board.GetFutureFigures().Any(i => i == Element.ORANGE))
-				//	L_Level = true;
-    //        }
+            if (!L_Level)
+            {
+				if (board.GetFutureFigures().Any(i => i == Element.ORANGE))
+					L_Level = true;
+            }
 
 			var figureType = board.GetCurrentFigureType();
-
-			if (figureType == Element.BLUE)
-			{
-				if (landscape.ReadyToStick)
-					return ThrowStick();
-
-				
-			}
 
 			var info = landscape.GetMoveFigureInfo(figureType);
 
@@ -92,10 +84,6 @@ namespace TetrisClient
 			}
 
 		}
-		public Command ThrowStick() => Command.RIGHT.Then(Command.RIGHT).Then(Command.RIGHT)
-				.Then(Command.RIGHT).Then(Command.RIGHT).Then(Command.RIGHT)
-				.Then(Command.RIGHT).Then(Command.RIGHT).Then(Command.RIGHT)
-				.Then(Command.DOWN);
 
 	}
 }
