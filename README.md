@@ -1,4 +1,4 @@
 # CodeBattleTetris
  
  
- ![preview] (resources/Diploma.pdf)
+ ![preview] (resources/Diploma.jpg)
