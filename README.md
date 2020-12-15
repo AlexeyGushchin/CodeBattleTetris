@@ -1,2 +1,4 @@
 # CodeBattleTetris
- Participant of the final
+ 
+ 
+ ![preview] (resources/Diploma.pdf)
